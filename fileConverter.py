@@ -1,8 +1,9 @@
 import os
-from os import listdir
-from os.path import isfile, join
 import xlrd
 import csv
+from os import listdir
+from os.path import isfile, join
+from tabula import convert_into
 
 #Path where spreadsheets are located
 path = '/Users/reed/Desktop/testSpreadsheets'
@@ -30,9 +31,11 @@ def convertXLS(a):
     print("CONVERTED FILE " + a + " TO .CSV")
     csv_file.close()
 
-
 #Converts a .pdf file to a .csv
-#def convertPDF(a):
+def convertPDF(a):
+    fileName = os.path.join(path, a)
+    csvFileName = a[0:len(a)-4]
+    convert_into(fileName, csvFileName, output_format="csv")
 
 
 for a in files:
@@ -43,5 +46,5 @@ for a in files:
             extension = b
     if(extension == '.xls' or extension == '.xlsx'):
         convertXLS(a)
-    #elif(extension == '.pdf'):
-        #convertPDF(a)
+    elif(extension == '.pdf'):
+        convertPDF(a)
