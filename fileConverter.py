@@ -4,14 +4,15 @@ import csv
 from os import listdir
 from os.path import isfile, join
 from tabula import convert_into
+from zipfile import ZipFile
 
 #Path where spreadsheets are located
-path = '/Users/reed/Desktop/Spreadsheets'
+path = '/Users/reed/Desktop/testSpreadsheets'
 #Gets every file in path and stores in list
 files = [f for f in listdir(path) if isfile(join(path, f))]
 
 #Possible file types for files
-fileTypes = ['.csv', '.xls', '.xlsx', '.pdf']
+fileTypes = ['.csv', '.xls', '.xlsx', '.pdf', '.zip']
 
 #Converts a .xls or .xlsx file to a .csv file
 def convertXLS(a):
@@ -43,14 +44,31 @@ def convertPDF(a):
     print("CONVERTED PDF FILE " + a + " TO .CSV")
     os.remove(fileName)
 
+def extractZip(a):
+    fileName = os.path.join(path, a)
+    with ZipFile(fileName, 'r') as zip:
+        zip.extractAll()
+    print("EXTRACTED .ZIP FILE " + a)
+    os.remove(fileName)
+
+containsZip = False
+
 #Goes through all the files and converts them if necessary
-for a in files:
-    extension = ''
-    #Identifies type of file
-    for b in fileTypes:
-        if(str(a).endswith(b)):
-            extension = b
-    if(extension == '.xls' or extension == '.xlsx'):
-        convertXLS(a)
-    elif(extension == '.pdf'):
-        convertPDF(a)
+def goThroughFiles():
+    for a in files:
+        extension = ''
+        #Identifies type of file
+        for b in fileTypes:
+            if(str(a).endswith(b)):
+                extension = b
+        if(extension == '.xls' or extension == '.xlsx'):
+            convertXLS(a)
+        elif(extension == '.pdf'):
+            convertPDF(a)
+        elif(extension == '.zip'):
+            extractZip(a)
+            containsZip = True
+
+goThroughFiles()
+if(containsZip):
+    goThroughFiles()
