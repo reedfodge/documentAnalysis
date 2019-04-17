@@ -1,6 +1,7 @@
 import os
 import xlrd
 import csv
+import pandas
 from os import listdir
 from os.path import isfile, join
 from tabula import convert_into
@@ -39,17 +40,27 @@ def convertXLS(a):
 #Converts a .pdf file to a .csv
 def convertPDF(a):
     fileName = os.path.join(path, a)
-    csvFileName = a[0:len(a)-4]
-    convert_into(fileName, csvFileName, output_format="csv")
+    csvFileName = a[0:len(a)-4] + '.csv'
+    convert_into(fileName, csvFileName, output_format="csv", pages='all')
     print("CONVERTED PDF FILE " + a + " TO .CSV")
     os.remove(fileName)
 
 def extractZip(a):
     fileName = os.path.join(path, a)
     with ZipFile(fileName, 'r') as zip:
-        zip.extractAll()
+        zip.extractall()
     print("EXTRACTED .ZIP FILE " + a)
     os.remove(fileName)
+    zipXLS = a[0:len(a)-4] + '.xls'
+    zipXLSX = a[0:len(a)-4] + '.xlsx'
+    zipPDF = a[0:len(a)-4] + '.zip'
+    try:
+        convertXLS(zipXLS)
+    except IOError:
+        try:
+            convertXLS(zipXLSX)
+        except IOError:
+            convertPDF(zipPDF)
 
 containsZip = False
 
@@ -68,7 +79,9 @@ def goThroughFiles():
         elif(extension == '.zip'):
             extractZip(a)
             containsZip = True
-
+    try:
+        randomFolderThatsAnnoying = os.path.join(path, '_MACOSX')
+        os.remove(randomFolderThatsAnnoying)
+    except:
+        containsZip = False
 goThroughFiles()
-if(containsZip):
-    goThroughFiles()
